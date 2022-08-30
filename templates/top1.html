@@ -1,0 +1,73 @@
+{% extends "layout.html" %} 
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %} 
+<div id="top">
+<div id ="param_selection" class="sel_block">
+
+    <label for="paramselect">Select emissions parameter :</label>
+        <select id= "paramselect" name = "paramselect" onchange= "GetQueryValues(this)">
+            {% for param in params %}
+                {% if param == param_q %}
+                    <option value = '{{param}}' selected = "selected"> {{ param }} </option>
+                {% else %}
+                    <option value = '{{ param }}' > {{ param }} </option>
+                {% endif %}
+            {% endfor %}
+          
+        </select>
+        <button id="map_play">Play</button>
+        <button id="stop">Stop</button>
+        
+    </div>
+
+<div id=pBarComponent  > 
+    <div class =row>
+    <label class=pbar> {{start_year}}</label>
+        <div id="progressBar">
+            <!-- <div id="pbartrack"></div> -->
+                <div class="pMarker"></div>
+        </div>
+    <label class=pbar> {{ latest_year }} </label>    
+</div>
+</div>
+
+</div>
+<div id=echart_container >
+    <div id="echart" >
+    </div>
+</div>
+
+<script>
+    
+    var myChart = echarts.init(document.getElementById('echart'));
+    var url = new URL(window.location.pathname, window.location.origin);
+    url.pathname= "{{url_for('static', filename='jsons/world.json')}}";
+    
+    
+    var latest_year = {{latest_year}};
+    var start_year = {{start_year}};
+    var axisLabel = {
+                        formatter: function (n) {
+                        return Math.round(n) + '';
+                        }
+                    };
+    
+    var option = {{ options[latest_year] | tojson }};
+    var options= {{options | tojson }};
+
+    option["axisLabel"] = axisLabel;
+        
+    myChart.setOption(option);
+
+
+</script>
+
+<script type = "text/javascript" src="{{url_for('static', filename='js/my_echart.js')}}"> </script>
+
+
+
+{% endblock %}

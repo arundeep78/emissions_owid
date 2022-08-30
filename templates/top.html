@@ -1,0 +1,168 @@
+{% extends "layout.html" %} 
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %} 
+<div id="top">
+<div id ="param_selection" class="sel_block">
+
+    <label for="paramselect">Select emissions parameter :</label>
+        <select id= "paramselect" name = "paramselect" onchange= "GetQueryValues(this)">
+            {% for param in params %}
+                {% if param == param_q %}
+                    <option value = '{{param}}' selected = "selected"> {{ param }} </option>
+                {% else %}
+                    <option value = '{{ param }}' > {{ param }} </option>
+                {% endif %}
+            {% endfor %}
+          
+        </select>
+        <button id="bar_play">Play</button>
+        <button id="stop">Stop</button>
+        
+    </div>
+
+<div id=pBarComponent  > 
+    <div class =row>
+    <label class=pbar> {{start_year}}</label>
+        <div id="progressBar">
+            <!-- <div id="pbartrack"></div> -->
+                <div class="pMarker"></div>
+        </div>
+    <label class=pbar> {{ latest_year }} </label>    
+</div>
+</div>
+
+</div>
+<div id=echart_container >
+    <div id="echart" >
+    </div>
+</div>
+
+<script>
+    
+
+    const countryColors = {
+        'China': "#da1d23",
+        'United States of America': "darkblue",
+        'India': "#87CEEB",
+        'Russia': "blue",
+        'Africa': "darkgreen",
+        'International transport': "grey",
+        'Japan': "#E8F48C",
+        'South America' :  "green" ,
+        'Iran': "#1f78b4",
+        'Germany': "#ccc", 
+        'Saudi Arabia': "#abc123", 
+        'South Korea': "black", 
+        'Canada': "darkgray",
+        'United Kingdom': '#a2af30', 
+        'Ukraine': "#ffd700", 
+        'Poland': "#dc143c", 
+        'France': "#ed2939", 
+        'Belgium': "brown",
+        'Venezuela': "#00008b", 
+        'Czechia': "#024fa2", 
+        'Netherlands': "orange", 
+        'Mexico': "#F653A6", 
+        'Austria': "pink",
+        'Spain': "#002a8f", 
+        'Italy': "#003580", 
+        'Sweden': "#e30a17", 
+        'Hungary': "wheat", 
+        'Denmark': " white", 
+        'Ireland': " indigo",
+        'Norway': "#ef2b2d"
+    }
+
+    var myChart = echarts.init(document.getElementById('echart'),'vintage');
+    
+    
+    var latest_year = {{latest_year}};
+    var start_year = {{start_year}};
+
+    var dataset = {{ dataset | tojson }};
+    
+    var option = {
+                "grid": {
+                    "top": 10,
+                    "bottom": 30,
+                    "left": 200,
+                    "right": 80
+                },
+                "xAxis": {
+                    "max": 'dataMax'
+                },
+                
+                "yAxis": {
+                    "type": 'category',
+                    "inverse": true,
+                    "max": 9,
+                    "axisLabel": {
+                        "show": true,
+                        "fontSize": 14
+                    },
+                    // "data" : df_data["country"].values.tolist(),
+                    "animationDuration": 300,
+                    "animationDurationUpdate": 300
+               },
+               "series": [
+                    {
+                        "realtimeSort": true,
+                        "seriesLayoutBy": 'column',
+                        "type": 'bar',
+                        "data": dataset[latest_year],
+                        itemStyle: {
+                            color: function (param) {
+                                return countryColors[param.value[0]] || '#5470c6';
+                            }
+                        },
+                        encode: {
+                            x: 1,
+                            y: 0
+                       },
+                        "label": {
+                            "show": true,
+                            "precision": 1,
+                            "position": 'right',
+                            "valueAnimation": true,
+                            "fontFamily": 'monospace'
+                        }
+                    }
+                ],
+            "animationDuration": 0,
+            "animationDurationUpdate": 500,
+            "animationEasing": 'linear',
+            "animationEasingUpdate": 'linear',
+            "graphic": {
+                "elements": [
+                    {
+                        "type": 'text',
+                        "right": 160,
+                        "bottom": 60,
+                        "style": {
+                            "text": latest_year,
+                            "font": 'bolder 80px monospace',
+                            "fill": 'rgba(100, 100, 100, 0.25)'
+                        },
+                        "z": 100
+                    }
+                ]
+            }
+        }
+
+    var dataset= {{dataset | tojson }};
+
+    
+    myChart.setOption(option);
+
+
+</script>
+
+<script type = "text/javascript" src="{{url_for('static', filename='js/my_echart.js')}}"> </script>
+
+
+
+{% endblock %}
